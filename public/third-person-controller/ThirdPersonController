@@ -1,0 +1,82 @@
+using UnityEngine;
+
+public class ThirdPersonController : MonoBehaviour {
+
+	float speed = 5;
+	private Transform directionController;
+    private float rotationSpeed = .25f;
+
+	private float currentX = 0;
+	private float currentY = 0;
+    private float Y_ANGLE_MIN = -40;
+    private float Y_ANGLE_MAX = 0;
+	private float camDistance = 6;
+	private Transform camLookAt;
+
+	void Start () {
+		Cursor.lockState = CursorLockMode.Locked;
+		
+		CreateObjects();
+	}
+	
+	void Update () {
+		MovementInput();
+		CameraInput();
+	}
+
+	private void MovementInput(){
+		float moveHorizontal;
+		float moveVertical;
+		Vector3 movement;
+		moveHorizontal = Input.GetAxisRaw("Horizontal");
+		moveVertical = Input.GetAxisRaw("Vertical");
+		movement = new Vector3(moveHorizontal, 0.0f, moveVertical);
+
+		FreeMovement(movement);
+    }
+
+	private void FreeMovement(Vector3 movement){
+        Vector3 dir = Camera.main.transform.position - transform.position;
+        dir.y = 0;
+        Quaternion rot = Quaternion.LookRotation(-dir);
+
+        directionController.transform.rotation =  rot;
+        directionController.transform.position = transform.position; 
+
+        movement = directionController.transform.TransformDirection(movement);
+        transform.Translate(movement * speed * Time.deltaTime, Space.World);
+            
+        if (movement != Vector3.zero){
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(movement), rotationSpeed);
+        }
+	}
+
+	private void CameraInput(){
+		currentX += Input.GetAxis("Mouse X");
+		currentY += Input.GetAxis("Mouse Y");
+		MouseOrbit(currentX, currentY); 
+	}
+
+	private void MouseOrbit(float currentX, float currentY){
+		Vector3 tp = transform.position;
+        camLookAt.position = tp;
+
+        currentY = Mathf.Clamp(currentY, Y_ANGLE_MIN, Y_ANGLE_MAX);  
+        Vector3 dis = new Vector3(0f, 0f, -camDistance);   
+        Quaternion rotation = Quaternion.Euler(-currentY, currentX, 0);
+        Vector3 tpFinal = camLookAt.position + rotation * dis;
+
+        Camera.main.transform.position = tpFinal; 
+        Camera.main.transform.LookAt(camLookAt.position);  
+	}
+
+	private void CreateObjects(){
+		directionController = new GameObject().transform;
+        directionController.name = "Direction Controller";
+        directionController.parent = transform;
+
+		camLookAt = new GameObject().transform;
+        camLookAt.name = "Cam Look At Point";
+		camLookAt.parent = transform;
+	}
+}

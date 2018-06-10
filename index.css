@@ -1,0 +1,12 @@
+body{
+    background-color: #5f636b;
+}
+
+.title, .footer{
+    color: white;
+    background-color: #282828;
+}
+
+.description{
+    color: white;
+}

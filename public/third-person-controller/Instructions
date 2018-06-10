@@ -1,0 +1,8 @@
+Set up is super easy!
+
+1. Open a new Unity3d project.
+2. Create a primitive GameObject (a capsule is perfect), or you can use your own model. 
+3. Make sure that the camera in your scene is tagged "Main Camera".
+4. Right-click in your project panel to create a new c# script and name it "ThirdPersonController".
+5. Copy/paste the code provided in this folder in the place of all of the text in the script you just created. 
+6. Press play and go nuts!
